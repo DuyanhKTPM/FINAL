@@ -4,7 +4,7 @@ const Store = require('../models/StoreModel')
 
 const createStore = (newStore) => {
     return new Promise(async (resolve, reject) => {
-        const { name, x, y } = newStore
+        const { name, x, y, retailerId } = newStore
         try {
             const checkStore = await Store.findOne({
                 name: name
@@ -17,7 +17,7 @@ const createStore = (newStore) => {
             }
 
             const createdStore = await Store.create({
-                name, x, y
+                name, x, y, retailerId
             })
             if (createdStore) {
                 resolve({
@@ -79,6 +79,44 @@ const updateStore = (id, data) => {
     });
 }
 
+const getAllStoreRetailer = (limit, page, sort, filter, userId) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            const totalStore = await Store.countDocuments({ retailerId: userId });
+
+            let query = { retailerId: userId };
+
+            if (filter) {
+                const [label, value] = filter;
+                query[label] = { '$regex': value, '$options': 'i' };
+            }
+
+            let storeQuery = Store.find(query)
+                .limit(limit)
+                .skip(page * limit);
+
+            if (sort) {
+                const sortField = sort[1];
+                const sortOrder = sort[0];
+                storeQuery = storeQuery.sort({ [sortField]: sortOrder });
+            }
+
+            const allStores = await storeQuery;
+
+            resolve({
+                status: 'OK',
+                message: 'SUCCESS',
+                data: allStores,
+                total: totalStore,
+                pageCurrent: Number(page + 1),
+                totalPage: Math.ceil(totalStore / limit)
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
 
 const deleteStore = (id) => {
     return new Promise(async (resolve, reject) => {
@@ -177,4 +215,5 @@ module.exports = {
     getAllStore,
     getDetailsStore,
     deleteManyStore,
+    getAllStoreRetailer,
 }

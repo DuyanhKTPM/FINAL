@@ -41,9 +41,21 @@ const ProductDetailsComponent = ({ idProduct }) => {
 
   const handleChangeCount = (type) => {
     if (type === "increase") {
-      setNumProduct(numProduct + 1);
+      // Kiểm tra nếu số lượng hiện tại nhỏ hơn số lượng trong kho
+      if (numProduct < productDetails?.countInStock) {
+        setNumProduct(numProduct + 1);
+      } else {
+        Message.warning(
+          "Số lượng sản phẩm không được vượt quá số lượng trong kho!"
+        );
+      }
     } else {
-      setNumProduct(numProduct - 1);
+      // Đảm bảo số lượng không giảm xuống dưới 1
+      if (numProduct > 1) {
+        setNumProduct(numProduct - 1);
+      } else {
+        Message.warning("Số lượng sản phẩm phải ít nhất là 1!");
+      }
     }
   };
 
@@ -243,11 +255,21 @@ const ProductDetailsComponent = ({ idProduct }) => {
             fontFamily: "self",
           }}
         >
-          <span>{productDetails?.name}</span>
+          <span
+            style={{
+              color: "green",
+              paddingTop: "10px",
+              justifyContent: "center",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            {productDetails?.name}
+          </span>
         </div>
 
         <div style={{ width: "100%", borderTop: "2px solid #ccc" }}>
-          <p style={{ color: "#556B2F", fontSize: "20px" }}>MÔ TẢ SẢN PHẨM: </p>
+          <b style={{ color: "#556B2F", fontSize: "20px" }}>MÔ TẢ SẢN PHẨM: </b>
           <p style={{ fontSize: "20px" }}>{productDetails?.description}</p>
           <div style={{ textAlign: "center" }}>
             <Image

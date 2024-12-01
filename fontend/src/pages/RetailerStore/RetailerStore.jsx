@@ -44,6 +44,7 @@ const RetailerStore = () => {
   const mutation = useMutationHooks((data) => {
     const res = StoreService.createStore({
       ...data,
+      retailerId: user?.id,
     });
     return res;
   });
@@ -64,13 +65,13 @@ const RetailerStore = () => {
     return res;
   });
 
-  const getAllStores = async () => {
-    const res = await StoreService.getAllStore("", 100);
+  const getAllStoreRetailers = async () => {
+    const res = await StoreService.getAllStoreRetailer(user?.id, "", 100);
     return res;
   };
   const queryStore = useQuery({
     queryKey: ["Stores"],
-    queryFn: getAllStores,
+    queryFn: getAllStoreRetailers,
   });
   const { data: Stores } = queryStore;
 

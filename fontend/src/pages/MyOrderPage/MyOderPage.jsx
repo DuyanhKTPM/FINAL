@@ -211,21 +211,23 @@ const MyOrderPage = () => {
                     </span>
                   </div>
                   <div style={{ display: "flex", gap: "10px" }}>
-                    <ButtonComponent
-                      onClick={() => handleCancelOrder(order)}
-                      size={40}
-                      styleButton={{
-                        padding: "10px 20px",
-                        backgroundColor: "red",
-                        color: "#fff",
-                        border: "none",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                      }}
-                      textButton={"Hủy đơn hàng"}
-                    ></ButtonComponent>
+                    {order && !order.isDelivered && (
+                      <ButtonComponent
+                        onClick={() => handleCancelOrder(order)}
+                        size={40}
+                        styleButton={{
+                          padding: "10px 20px",
+                          backgroundColor: "red",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: "5px",
+                          cursor: "pointer",
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                        }}
+                        textButton={"Hủy đơn hàng"}
+                      />
+                    )}
 
                     <ButtonComponent
                       onClick={() => handleDetailsOrder(order?._id)}

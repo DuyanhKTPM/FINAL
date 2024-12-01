@@ -6,9 +6,8 @@ const EmailService = require("../services/EmailService")
 
 const createOrder = (newOrder) => {
     return new Promise(async (resolve, reject) => {
-
         const { orderItems, paymentMethod, shippingMethod, itemsPrice, shippingPrice, totalPrice, isPaid, paidAt,
-            fullName, address, city, phone, user, email, retailerName, retailerId } = newOrder
+            fullName, address, city, phone, user, email, retailerName, retailerId } = newOrder;
         try {
             const promises = orderItems.map(async (order) => {
                 const productData = await Product.findOneAndUpdate(
@@ -23,47 +22,49 @@ const createOrder = (newOrder) => {
                         }
                     },
                     { new: true, returnDocument: 'after' }
-                )
-                if (productData) {
-                    const createdOrder = await Order.create({
-                        orderItems,
-                        shippingAddress: {
-                            fullName,
-                            address,
-                            city,
-                            phone
-                        },
-                        paymentMethod,
-                        shippingMethod,
-                        isPaid,
-                        paidAt,
-                        itemsPrice,
-                        shippingPrice,
-                        totalPrice,
-                        user: user,
-                        retailerName,
-                        retailerId
-                    })
-                    if (createdOrder) {
-                        await EmailService.sendEmailCreateOrder(email, orderItems)
-                        resolve({
-                            status: 'OK',
-                            message: 'success'
-                        })
-                    }
-                } else {
-                    return {
+                );
+                if (!productData) {
+                    throw {
                         status: 'ERR',
-                        message: 'Error',
+                        message: 'Không đủ hàng trong kho',
                         id: order.product
-                    }
+                    };
                 }
-            })
-        } catch (e) {
-            reject(e)
+            });
+
+            await Promise.all(promises);
+
+            const createdOrder = await Order.create({
+                orderItems,
+                shippingAddress: {
+                    fullName,
+                    address,
+                    city,
+                    phone
+                },
+                paymentMethod,
+                shippingMethod,
+                isPaid,
+                paidAt,
+                itemsPrice,
+                shippingPrice,
+                totalPrice,
+                user: user,
+                retailerName,
+                retailerId
+            });
+
+            await EmailService.sendEmailCreateOrder(email, orderItems);
+
+            resolve({
+                status: 'OK',
+                message: 'success'
+            });
+        } catch (error) {
+            reject(error);
         }
-    })
-}
+    });
+};
 
 const updateOrder = (id, data) => {
     return new Promise(async (resolve, reject) => {
@@ -78,14 +79,15 @@ const updateOrder = (id, data) => {
 
             const productData = await Order.findOneAndUpdate(
                 {
-                    _id: order._id, // Điều kiện tìm sản phẩm theo ID
-                    isPaid: false      // Chỉ cập nhật nếu isPaid hiện tại là false
+                    _id: order._id,
+                    isPaid: false
                 },
                 {
-                    isPaid: true       // Thay đổi isPaid thành true
+                    isPaid: true,
+                    isDelivered: true
                 },
                 {
-                    new: true,         // Trả về tài liệu sau khi cập nhật
+                    new: true,
                     returnDocument: 'after'
                 }
             );

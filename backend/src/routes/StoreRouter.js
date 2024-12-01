@@ -9,7 +9,6 @@ router.delete('/delete/:id', StoreController.deleteStore)
 router.get('/get-details/:id', StoreController.getDetailsStore)
 router.get('/get-all', StoreController.getAllStore)
 router.post('/deleteMany-product', StoreController.deleteManyStore)
-
-
+router.get('/get-all-retailer', StoreController.getAllStoreRetailer)
 
 module.exports = router 
