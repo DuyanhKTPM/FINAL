@@ -4,11 +4,16 @@ const CommentService = require('../services/CommentServices')
 
 const createComment = async (req, res) => {
     try {
-        const { productId, text, rating } = req.body
+        const { productId, userId, text, rating } = req.body
         if (!productId) {
             return res.status(400).json({
                 status: 'ERR',
                 message: 'Sản phẩm không tồn tại'
+            })
+        } else if (!userId) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'Chưa đănng nhập'
             })
         }
         else if (!rating) {
@@ -52,7 +57,25 @@ const getComments = async (req, res) => {
         });
     }
 }
+const deleteComment = async (req, res) => {
+    try {
+        const commentId = req.params.id
+        if (!commentId) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'The commentId is required'
+            })
+        }
+        const response = await CommentService.deleteComment(commentId)
+        return res.status(201).json(response)
+    } catch (e) {
+        return res.status(500).json({
+            message: e
+        })
+    }
+}
 module.exports = {
     createComment,
     getComments,
+    deleteComment,
 }

@@ -5,11 +5,11 @@ const Comment = require("../models/Comment")
 
 const createComment = (newComment) => {
     return new Promise(async (resolve, reject) => {
-        const { productId, text, rating } = newComment
+        const { productId, userId, text, rating } = newComment
         try {
 
             const createdComment = await Comment.create({
-                productId, text, rating
+                productId, userId, text, rating
             })
             if (createdComment) {
                 resolve({
@@ -46,7 +46,30 @@ const getComments = (id) => {
         }
     })
 }
+const deleteComment = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const checkComment = await Store.findOne({
+                _id: id
+            })
+            if (checkComment === null) {
+                resolve({
+                    status: 'OK',
+                    message: 'The comment is not defined'
+                })
+            }
+            await Store.findByIdAndDelete(id)
+            resolve({
+                status: 'OK',
+                message: 'Đã xóa bình luận thành công',
+            })
+        } catch (e) {
+            reject(e)
+        }
+    })
+}
 module.exports = {
     createComment,
     getComments,
+    deleteComment,
 }

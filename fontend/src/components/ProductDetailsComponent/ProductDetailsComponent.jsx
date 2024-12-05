@@ -1,4 +1,4 @@
-import { Col, Row, Image } from "antd";
+import { Col, Row, Image, Modal } from "antd";
 import { Rate, Form, Input } from "antd";
 
 import InputComponents from "../../components/InputComponents/InputComponents";
@@ -15,7 +15,7 @@ import {
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
 import * as ProductService from "../../service/ProductService";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { MinusOutlined, PlusOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { addOrder } from "../../redux/slides/orderSlide";
@@ -23,6 +23,7 @@ import { convertPrice } from "../../utils";
 import * as Message from "../../components/Message/Message";
 import { useMutationHooks } from "../../hooks/useMutationHooks";
 import * as CommentService from "../../service/CommentService";
+import ModalComponent from "../ModalComponent/ModalComponent";
 
 const ProductDetailsComponent = ({ idProduct }) => {
   const [numProduct, setNumProduct] = useState(1);
@@ -31,6 +32,8 @@ const ProductDetailsComponent = ({ idProduct }) => {
   const location = useLocation();
   const user = useSelector((state) => state.user);
   const [rate, setRate] = useState(0);
+  // const [isModal, setIsModal] = useState(false);
+  // const [commentToEdit, setCommentToEdit] = useState(null);
   const [averageRating, setAverageRating] = useState(4);
   const [form] = Form.useForm();
   const { TextArea } = Input;
@@ -81,35 +84,81 @@ const ProductDetailsComponent = ({ idProduct }) => {
     }));
   }
   const mutation = useMutationHooks((data) => {
-    const { productId, text, rating } = data;
+    const { productId, userId, text, rating } = data;
     const res = CommentService.createComment(data)
     return res;
   })
-  const { data, isSuccess, isError } = mutation
+  const mutationDelete = useMutationHooks((data) => {
+    const { id, token } = data;
+    const res = CommentService.deleteComment(data);
+    return res;
+  });
+  const mutationUpdate = useMutationHooks((data) => {
+    const { id, token } = data;
+    const res = CommentService.updateComment(data);
+    return res;
+  });
+  const { data, isSuccess, isError } = mutationDelete
+  const { data: dataDelete, isSuccess: isSuccessDelete, isError: isErrorDelete } = mutationDelete
+  // const { data: dataUpdate, isSuccess: isSuccessUpdate, isError: isErrorUpdate } = mutationUpdate
+
+
   const handleAddComment = () => {
-    mutation.mutate({
-      productId: idProduct,
-      text: stateComments.text,
-      rating: rate,
-    }, {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["comment", idProduct]);
-        setStateComments(inittial());
-        setRate(0);
-      },
-      onError: () => {
-        Message.error("Có lỗi xảy ra khi thêm bình luận!");
-      },
-    });
+    if (!user.id) {
+      navigate('/sign-in');
+      Message.warning('Vui lòng đăng nhập!');
+    } else {
+      const commentText = `${user.name}: ${stateComments.text}`;
+
+      mutation.mutate({
+        productId: idProduct,
+        userId: user.id,
+        text: commentText,  // Gửi tên người dùng vào trước bình luận
+        rating: rate,
+      }, {
+        onSuccess: () => {
+          queryClient.invalidateQueries(["comment", idProduct]);
+          setStateComments(inittial());
+          setRate(0);
+        },
+        onError: () => {
+          Message.error("Có lỗi xảy ra khi thêm bình luận!");
+        },
+      });
+    }
   };
 
-
+  const handleDeleteComment = (commentId) => {
+    mutationDelete.mutate({
+      id: commentId,
+      token: user?.access_token
+    },
+      {
+        onSettled: () => {
+          comments.refetch();
+        },
+      }
+    )
+  }
+  const handleUpdateComment = (commentId) => {
+    mutationUpdate.mutate({
+      id: commentId,
+      token: user?.access_token
+    },
+      {
+        onSettled: () => {
+          comments.refetch();
+        },
+      }
+    );
+  };
 
   const { data: productDetails } = useQuery({
     queryKey: ["product-details", idProduct],
     queryFn: () => fetchGetDetailsProduct(idProduct),
     enabled: !!idProduct,
   });
+
   const { data: comments } = useQuery({
     queryKey: ["comment", idProduct],
     queryFn: () => fetchGetDetailsProductComments(idProduct),
@@ -124,6 +173,13 @@ const ProductDetailsComponent = ({ idProduct }) => {
       Message.error();
     }
   }, [isSuccess, isError, data?.status]);
+  useEffect(() => {
+    if (isSuccessDelete && dataDelete?.status === "OK") {
+      Message.success();
+    } else if (isErrorDelete) {
+      Message.error();
+    }
+  }, [isSuccessDelete, isErrorDelete, dataDelete?.status]);
   useEffect(() => {
     if (comments?.length > 0) {
       const totalRating = comments.reduce((sum, comment) => sum + comment.rating, 0);
@@ -155,6 +211,9 @@ const ProductDetailsComponent = ({ idProduct }) => {
       Message.success("Thêm sản phẩm vào giỏ hàng thành công!");
     }
   };
+  // const handleEditComment = () => {
+  //   setIsModal(true)
+  // };
   return (
     <div
       style={{
@@ -513,20 +572,40 @@ const ProductDetailsComponent = ({ idProduct }) => {
               <div
                 key={comment.id}
                 style={{
+                  display: "flex",
+                  justifyContent: "space-between",
                   borderBottom: "1px solid #ccc",
                   padding: "10px 0",
                   marginBottom: "10px",
+                  width: "100%"
                 }}
               >
-                <p style={{ display: "flex", margin: "0", fontSize: "16px" }}>
+                <p style={{ margin: "0", fontSize: "16px" }}>
                   <span style={{ color: "gold", width: "80px" }}>
                     {Array.from({ length: comment.rating }, (_, i) => "★").join(
                       ""
                     )}
                   </span>
-                  {comment.text}{" "}
-
+                  {comment.text}
                 </p>
+                <div style={{ display: 'flex', flexWrap: 'nowrap' }}>
+                  {(user?.role === "Admin" || (user?.role === "Retailer" && productDetails?.retailerId === user?.id)
+                    || user?.id === comment.userId
+                  ) && (
+                      <div style={{ fontSize: "16px", color: "red", cursor: "pointer", padding: "0 5px" }}>
+                        <DeleteOutlined
+                          onClick={() => handleDeleteComment(comment._id)}
+                        />
+                      </div>
+                    )}
+                  {/* {user?.id === comment.userId && (
+                    <div style={{ fontSize: "16px", color: "blue", cursor: "pointer", padding: "0 5px" }}>
+                      <EditOutlined
+                        onClick={handleEditComment}
+                      />
+                    </div>
+                  )} */}
+                </div>
               </div>
             ))
           ) : (
@@ -534,6 +613,19 @@ const ProductDetailsComponent = ({ idProduct }) => {
           )}
         </div>
       </Row>
+      {/* <ModalComponent
+        title="Sửa bình luận"
+        open={isModal}
+        onCancel={() => setIsModal(false)}
+        onOk={() => handleUpdateComment(commentToEdit._id)} // Gọi hàm cập nhật khi nhấn "OK"
+      >
+        <TextArea
+          rows={4}
+          value={comments?.text} // Hiển thị nội dung bình luận hiện tại
+          onChange={handleOnChange}
+        />
+      </ModalComponent> */}
+
     </div>
   );
 };

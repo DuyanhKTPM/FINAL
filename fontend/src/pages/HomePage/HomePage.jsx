@@ -57,8 +57,10 @@ const HomePage = () => {
     // Lấy ra top 3 sản phẩm bán chạy nhất
     return sortedProducts.slice(0, 6); // Đổi số 3 nếu bạn muốn lấy top n sản phẩm
   }, [products]);
+
   return (
     <>
+
       <div style={{ padding: "0 120px" }}>
         <WrapperTypeProduct>
           {typeProducts.length > 0 ? (
@@ -132,11 +134,10 @@ const HomePage = () => {
               styleButton={{
                 border: "1px solid rgb(11,116,229)",
                 background: "#fff",
-                color: `${
-                  products?.total === products?.data?.length
-                    ? "#ccc"
-                    : "rgb(11,116,229)"
-                }`,
+                color: `${products?.total === products?.data?.length
+                  ? "#ccc"
+                  : "rgb(11,116,229)"
+                  }`,
                 width: "40%",
                 height: "38px",
                 borderRadius: "4px",
@@ -206,6 +207,13 @@ const HomePage = () => {
             )}
           </WrapperProducts>
         </div>
+        <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+        <df-messenger
+          intent="WELCOME"
+          chat-title="Chatbot1"
+          agent-id="cb7ffed2-370e-4edc-aeb3-dec23c3bf7c5"
+          language-code="vi"
+        ></df-messenger>
       </div>
     </>
   );

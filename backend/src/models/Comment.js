@@ -6,6 +6,11 @@ const commentSchema = new mongoose.Schema({
     ref: "Product",
     required: true,
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   text: {
     type: String,
     required: true,
@@ -17,15 +22,15 @@ const commentSchema = new mongoose.Schema({
     min: 1,
     max: 5,
   },
-  
-//   createdAt: {
-//     type: Date,
-//     default: Date.now,
-//   },
+
+  //   createdAt: {
+  //     type: Date,
+  //     default: Date.now,
+  //   },
 },
-{
+  {
     timestamps: true
-});
+  });
 
 const Comment = mongoose.model("Comment", commentSchema);
 module.exports = Comment;

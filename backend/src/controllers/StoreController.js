@@ -76,7 +76,6 @@ const deleteStore = async (req, res) => {
             message: e
         })
     }
-
 }
 const deleteManyStore = async (req, res) => {
     console.log('req', req.body)
@@ -102,7 +101,7 @@ const deleteManyStore = async (req, res) => {
 const getAllStore = async (req, res) => {
     try {
         const { limit, page, sort, filter } = req.query
-        
+
         const response = await StoreService.getAllStore(
             Number(limit) || 8,
             Number(page) || 0,
