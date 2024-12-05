@@ -74,7 +74,7 @@ const MyOrderPage = () => {
     if (isSuccessCancel && dataCancel?.status === "OK") {
       Message.success();
     } else if (isSuccessCancel && dataCancel?.status === "ERR") {
-      Message.error(dataCancel?.Message);
+      Message.success();
     } else if (isErrorCancle) {
       Message.error();
     }
@@ -131,7 +131,6 @@ const MyOrderPage = () => {
       );
     });
   };
-  console.log("check data :", data);
   return (
     <WrapperContainer>
       <div style={{ height: "100%", width: "100%", margin: "0 auto" }}>
@@ -163,9 +162,8 @@ const MyOrderPage = () => {
                         fontWeight: "bold",
                         fontSize: "15px",
                       }}
-                    >{`${
-                      order.isDelivered ? "Đã giao hàng" : "Chưa giao hàng"
-                    }`}</span>
+                    >{`${order.isDelivered ? "Đã giao hàng" : "Chưa giao hàng"
+                      }`}</span>
                   </div>
                   <div>
                     <span
@@ -179,9 +177,8 @@ const MyOrderPage = () => {
                         fontWeight: "bold",
                         fontSize: "15px",
                       }}
-                    >{`${
-                      order.isPaid ? "Đã thanh toán" : "Chưa thanh toán"
-                    }`}</span>
+                    >{`${order.isPaid ? "Đã thanh toán" : "Chưa thanh toán"
+                      }`}</span>
                   </div>
                 </WrapperStatus>
                 {renderProduct(order?.orderItems)}

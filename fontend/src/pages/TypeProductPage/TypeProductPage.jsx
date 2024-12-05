@@ -31,7 +31,6 @@ const TypeProductPage = () => {
     if (res?.status === "OK") {
       setProducts(res?.data);
       setPanigate({ ...panigate, total: res?.totalPage });
-      console.log("res", res);
     } else {
     }
   };

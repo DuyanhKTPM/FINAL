@@ -26,7 +26,6 @@ const AdminProduct = () => {
   const [typeSelect, setTypeSelect] = useState("");
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const user = useSelector((state) => state?.user);
-  console.log("user", user);
   // const [searchText, setSearchText] = useState('');
   // const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef(null);
@@ -90,7 +89,6 @@ const AdminProduct = () => {
 
   const fetchGetDetailsProduct = async (rowSelected) => {
     const res = await ProductService.getDetailsProduct(rowSelected);
-    console.log("res", res.data);
     if (res?.data) {
       setStateProductDetails({
         name: res?.data?.name,
@@ -303,7 +301,6 @@ const AdminProduct = () => {
       return { ...product, key: product._id };
     });
   const { data, isSuccess, isError } = mutation;
-  console.log("s", data);
   const {
     data: dataUpdate,
     isSuccess: isSuccessUpdate,

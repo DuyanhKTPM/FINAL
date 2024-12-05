@@ -76,7 +76,6 @@ const OrderPage = () => {
       });
     }
   }, [isModalUpdateInfo]);
-  console.log("us", user);
   const priceMemo = useMemo(() => {
     const result = order?.orderItemsSelected?.reduce((total, cur) => {
       return total + cur.price * cur.amount;

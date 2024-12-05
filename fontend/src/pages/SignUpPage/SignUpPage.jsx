@@ -35,7 +35,6 @@ const SignUpPage = () => {
   const onChange = (e) => {
     setRole(e.target.value);
   };
-  console.log("murrrrrrrrrr", mutation);
   useEffect(() => {
     if (isError) {
       Message.error(mutation?.error?.response?.data?.message);

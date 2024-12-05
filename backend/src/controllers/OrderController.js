@@ -6,12 +6,35 @@ const createOrder = async (req, res) => {
     try {
         const { paymentMethod, shippingMethod, itemsPrice, shippingPrice, totalPrice, fullName,
             address, city, phone, retailerName, retailerId } = req.body
-
-        if (!paymentMethod || !shippingMethod || !itemsPrice || !shippingPrice
-            || !totalPrice || !fullName || !address || !city || !phone || !retailerName || !retailerId) {
-            return res.status(200).json({
+        if (!paymentMethod) {
+            return res.status(400).json({
                 status: 'ERR',
-                message: 'The input is required'
+                message: 'The paymentMethod is required'
+            })
+        } else if (!shippingMethod) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'The shippingMethod is required'
+            })
+        } else if (!itemsPrice) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'The itemsPrice is required'
+            })
+            // } else if (!shippingPrice) {
+            //     return res.status(400).json({
+            //         status: 'ERR',
+            //         message: 'The shippingPrice is required'
+            //     })
+        } else if (!totalPrice) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'The totalPrice is required'
+            })
+        } else if (!fullName || !address || !city || !phone || !retailerName || !retailerId) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'The information is required'
             })
         }
         const response = await OrderService.createOrder(req.body)

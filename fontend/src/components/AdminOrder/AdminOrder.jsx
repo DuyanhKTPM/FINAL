@@ -247,7 +247,6 @@ const AdminUser = () => {
   const dataTable =
     orders?.data?.length &&
     orders?.data?.map((order) => {
-      console.log("order", order);
       return {
         ...order,
         fullName: order?.shippingAddress?.fullName,

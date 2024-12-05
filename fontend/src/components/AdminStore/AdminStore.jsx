@@ -71,7 +71,6 @@ const AdminStore = () => {
 
   const fetchGetDetailsStore = async (rowSelected) => {
     const res = await StoreService.getDetailsStore(rowSelected);
-    console.log("res", res.data);
     if (res?.data) {
       setStateStoreDetails({
         name: res?.data?.name,
@@ -236,7 +235,6 @@ const AdminStore = () => {
       return { ...Store, key: Store._id };
     });
   const { data, isSuccess, isError } = mutation;
-  console.log("s", data);
   const {
     data: dataUpdate,
     isSuccess: isSuccessUpdate,

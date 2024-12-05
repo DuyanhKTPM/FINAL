@@ -1,5 +1,5 @@
 import { Col, Row, Image } from "antd";
-import { Rate, Form } from "antd";
+import { Rate, Form, Input } from "antd";
 
 import InputComponents from "../../components/InputComponents/InputComponents";
 import React, { useState, useEffect } from "react";
@@ -21,6 +21,8 @@ import { useLocation, useNavigate } from "react-router";
 import { addOrder } from "../../redux/slides/orderSlide";
 import { convertPrice } from "../../utils";
 import * as Message from "../../components/Message/Message";
+import { useMutationHooks } from "../../hooks/useMutationHooks";
+import * as CommentService from "../../service/CommentService";
 
 const ProductDetailsComponent = ({ idProduct }) => {
   const [numProduct, setNumProduct] = useState(1);
@@ -28,47 +30,30 @@ const ProductDetailsComponent = ({ idProduct }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const user = useSelector((state) => state.user);
-  const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState("");
-  const [rating, setRating] = useState(0);
+  const [rate, setRate] = useState(0);
+  const [averageRating, setAverageRating] = useState(4);
   const [form] = Form.useForm();
-
+  const { TextArea } = Input;
   const queryClient = useQueryClient();
   const onChange = (value) => {
     setNumProduct(Number(value));
   };
-
+  const inittial = () => ({
+    text: "",
+    rating: "",
+    productId: "",
+  });
+  const [stateComments, setStateComments] = useState(inittial());
   const fetchGetDetailsProduct = async () => {
-    // const id = context?.queryKey && context?.queryKey[0]
-    // if(id){
     const res = await ProductService.getDetailsProduct(idProduct);
     return res.data;
-    // }
+  };
+  const fetchGetDetailsProductComments = async () => {
+    const res = await CommentService.getDetailsProductComments(idProduct);
+    return res.data;
   };
 
-  // Hàm giả lập fetch bình luận từ server (nếu có backend, thay bằng API call)
-  useEffect(() => {
-    // Giả lập bình luận từ server
-    setComments([
-      // { id: 1, text: "Sản phẩm rất tốt!", rating: 5 },
-      // { id: 2, text: "Chất lượng ổn nhưng giao hàng hơi chậm.", rating: 3 },
-    ]);
-  }, []);
-  const handleAddComment = () => {
-    if (!newComment.trim() || rating === 0) {
-      Message.warning("Vui lòng nhập bình luận và chọn số sao!");
-      return;
-    }
-    const newCommentData = {
-      id: Date.now(),
-      text: newComment,
-      rating,
-    };
-    setComments([...comments, newCommentData]);
-    setNewComment("");
-    setRating(0);
-    Message.success("Đã thêm bình luận thành công!");
-  };
+
 
   const handleChangeCount = (type) => {
     if (type === "increase") {
@@ -89,13 +74,65 @@ const ProductDetailsComponent = ({ idProduct }) => {
       }
     }
   };
+  const handleOnChange = (e) => {
+    setStateComments((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
+  }
+  const mutation = useMutationHooks((data) => {
+    const { productId, text, rating } = data;
+    const res = CommentService.createComment(data)
+    return res;
+  })
+  const { data, isSuccess, isError } = mutation
+  const handleAddComment = () => {
+    mutation.mutate({
+      productId: idProduct,
+      text: stateComments.text,
+      rating: rate,
+    }, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["comment", idProduct]);
+        setStateComments(inittial());
+        setRate(0);
+      },
+      onError: () => {
+        Message.error("Có lỗi xảy ra khi thêm bình luận!");
+      },
+    });
+  };
+
+
 
   const { data: productDetails } = useQuery({
     queryKey: ["product-details", idProduct],
     queryFn: () => fetchGetDetailsProduct(idProduct),
     enabled: !!idProduct,
   });
-  console.log("productDetails", productDetails);
+  const { data: comments } = useQuery({
+    queryKey: ["comment", idProduct],
+    queryFn: () => fetchGetDetailsProductComments(idProduct),
+    enabled: !!idProduct,
+  });
+
+
+  useEffect(() => {
+    if (isSuccess && data?.status === "OK") {
+      Message.success();
+    } else if (isError) {
+      Message.error();
+    }
+  }, [isSuccess, isError, data?.status]);
+  useEffect(() => {
+    if (comments?.length > 0) {
+      const totalRating = comments.reduce((sum, comment) => sum + comment.rating, 0);
+      const average = totalRating / comments.length;
+      setAverageRating(average);
+    }
+  }, [comments]);
+
+
   const handleAddOrderProduct = () => {
     if (!user?.id) {
       navigate("/sign-in", { state: location?.pathname });
@@ -153,7 +190,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
             <Rate
               allowHalf
               defaultValue={productDetails?.rating}
-              value={productDetails?.rating}
+              value={averageRating}
             />
             <WrapperStyleText>
               {" "}
@@ -421,40 +458,36 @@ const ProductDetailsComponent = ({ idProduct }) => {
         }}
       >
         <div style={{ width: "100%" }}>
-          <h3 style={{ color: "#556B2F" }}>Bình luận và đánh giá sản phẩm</h3>
+          <h3 style={{ fontSize: '20px', color: "#556B2F" }}>Bình luận và đánh giá sản phẩm</h3>
           <div style={{ marginBottom: "20px" }}>
+            <p style={{ fontSize: '18px' }}>Bình luận</p>
             <Form
               name="basic"
-              labelCol={{ span: 2 }}
+              labelCol={{ span: 0 }}
               wrapperCol={{ span: 20 }}
-              // autoComplete="on"
-              size={large}
+              autoComplete="on"
               form={form}
-              style={{ height: "500px" }} // Điều chỉnh chiều cao Form
             >
-              <Form.Item
-                // label="Tên Sản Phẩm"
-                name="name"
-                rules={[{ required: true, message: "Nhập tên sản phẩm!" }]}
-              >
-                <InputComponents
-                  // value={stateProduct.name}
-                  // onChange={handleOnChange}
-                  name="name"
+              <Form.Item label="Bình luận">
+                <TextArea rows={4}
+                  placeholder="Nhập đánh giá về sản phẩm!!!"
+                  value={stateComments?.text}
+                  onChange={handleOnChange}
+                  name="text"
                 />
               </Form.Item>
             </Form>
             <div style={{ marginBottom: "10px" }}>
-              <label>Đánh giá: </label>
+              <label style={{ fontSize: '18px' }}>Đánh giá: </label>
               {[1, 2, 3, 4, 5].map((star) => (
                 <span
                   key={star}
                   style={{
                     cursor: "pointer",
-                    color: star <= rating ? "gold" : "gray",
+                    color: star <= rate ? "gold" : "gray",
                     fontSize: "20px",
                   }}
-                  onClick={() => setRating(star)}
+                  onClick={() => setRate(star)}
                 >
                   ★
                 </span>
@@ -472,10 +505,10 @@ const ProductDetailsComponent = ({ idProduct }) => {
             />
           </div>
 
-          <h4 style={{ color: "#556B2F", marginBottom: "10px" }}>
-            Đánh giá từ người dùng
+          <h4 style={{ fontSize: '20px', color: "#556B2F", marginBottom: "10px" }}>
+            Đánh giá từ người dùng đã trải nghiệm
           </h4>
-          {comments.length > 0 ? (
+          {comments?.length > 0 ? (
             comments.map((comment) => (
               <div
                 key={comment.id}
@@ -485,13 +518,14 @@ const ProductDetailsComponent = ({ idProduct }) => {
                   marginBottom: "10px",
                 }}
               >
-                <p style={{ margin: "0", fontSize: "16px" }}>
-                  {comment.text}{" "}
-                  <span style={{ color: "gold" }}>
+                <p style={{ display: "flex", margin: "0", fontSize: "16px" }}>
+                  <span style={{ color: "gold", width: "80px" }}>
                     {Array.from({ length: comment.rating }, (_, i) => "★").join(
                       ""
                     )}
                   </span>
+                  {comment.text}{" "}
+
                 </p>
               </div>
             ))
