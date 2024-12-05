@@ -18,6 +18,7 @@ import * as Message from "../../components/Message/Message";
 import { WrapperHeader } from "./style";
 import { WrapperUploadFile } from "./style";
 import * as UserService from "../../service/UserService";
+import ColumnSearch from "../ColumnSearch/ColumnSearch"
 
 const AdminUser = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -115,7 +116,7 @@ const AdminUser = () => {
             fontSize: "16px",
             cursor: "pointer",
             margin: "5px",
-          }}
+          }} dataIndex
           onClick={handleDetailsUser}
         />
       </div>
@@ -209,14 +210,16 @@ const AdminUser = () => {
     {
       title: "Tên người dùng",
       dataIndex: "name",
-      sorter: (a, b) => a.name.length - b.name.length,
-      ...getColumnSearchProps("name"),
+      sorter: (a, b) => a.name.localeCompare(b.name),
+      ...ColumnSearch({ dataIndex: "name" }),
+
     },
     {
       title: "Email",
       dataIndex: "email",
       sorter: (a, b) => a.name.length - b.name.length,
-      ...getColumnSearchProps("email"),
+      ...ColumnSearch({ dataIndex: "email" }),
+
     },
     {
       title: "Phân quyền",
@@ -226,16 +229,16 @@ const AdminUser = () => {
       title: "Địa chỉ",
       dataIndex: "address",
       sorter: (a, b) => a.address.length - b.address.length,
-      ...getColumnSearchProps("address"),
+      ...ColumnSearch({ dataIndex: "address" }),
     },
     {
       title: "Số điện thoại",
       dataIndex: "phone",
-      sorter: (a, b) => a.phone - b.phone,
-      ...getColumnSearchProps("phone"),
+      sorter: (a, b) => String(a.phone).localeCompare(String(b.phone)),
+      ...ColumnSearch({ dataIndex: "phone" }),
     },
     {
-      title: "Action",
+      title: "Tác vụ",
       dataIndex: "action",
       render: renderAction,
     },
@@ -243,13 +246,15 @@ const AdminUser = () => {
 
   const dataTable =
     users?.data?.length &&
-    users?.data?.map((user) => {
-      return {
-        ...user,
-        key: user._id,
-        role: user?.role,
-      };
-    });
+    users?.data
+      .filter((user) => user.role !== "Admin") // Bỏ qua admin
+      .map((user) => {
+        return {
+          ...user,
+          key: user._id,
+          role: user?.role,
+        };
+      });
   const {
     data: dataUpdate,
     isSuccess: isSuccessUpdate,

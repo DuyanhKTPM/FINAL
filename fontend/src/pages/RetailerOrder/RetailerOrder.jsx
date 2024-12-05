@@ -17,6 +17,8 @@ import { useLocation, useNavigate } from "react-router";
 import InputComponents from "../../components/InputComponents/InputComponents";
 import TableComponent from "../../components/TableComponent/TableComponent";
 import ModalComponent from "../../components/ModalComponent/ModalComponent";
+import ColumnSearch from "../../components/ColumnSearch/ColumnSearch";
+
 
 const RetailerOrder = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -110,9 +112,9 @@ const RetailerOrder = () => {
         />
         <DeleteOutlined
           style={{
-            color: "red",
+            color: orders.isPaid ? "gray" : "red",
             fontSize: "16px",
-            cursor: "pointer",
+            cursor: orders.isPaid ? "not-allowed" : "pointer",
             margin: "5px",
           }}
           onClick={() => setIsModalOpenDelete(true)}
@@ -215,29 +217,36 @@ const RetailerOrder = () => {
 
   const columns = [
     {
-      title: "Mã đơn hàng",
+      title: "Mã Order",
       dataIndex: "_id",
-      sorter: (a, b) => a._id.length - b._id.length,
-      ...getColumnSearchProps("_id"),
+      sorter: (a, b) => a._id.localeCompare(b._id),
+      ...ColumnSearch({ dataIndex: "_id" })
     },
     {
       title: "Người mua hàng",
       dataIndex: "fullName",
-      sorter: (a, b) => a.fullName.length - b.fullName.length,
-      ...getColumnSearchProps("fullName"),
+      ...ColumnSearch({ dataIndex: "fullName" })
+
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "isDelivered",
+      ...ColumnSearch({ dataIndex: "isDelivered" }),
+      render: (isDelivered) => (isDelivered ? "Đã giao hàng" : "Chưa giao hàng"),
     },
     {
       title: "Cửa hàng",
       dataIndex: "retailerName",
-      ...getColumnSearchProps("retailerName"),
+      ...ColumnSearch({ dataIndex: "retailerName" }),
     },
     {
       title: "Tổng tiền",
       dataIndex: "totalPrice",
-      sorter: (a, b) => a.totalPrice.length - b.totalPrice.length,
+      sorter: (a, b) => a.totalPrice - b.totalPrice,
+      render: (value) => `${value.toLocaleString()} đ`,
     },
     {
-      title: "Action",
+      title: "Tác vụ",
       dataIndex: "action",
       render: (_, record) => renderAction(record),
     },
@@ -333,7 +342,7 @@ const RetailerOrder = () => {
   useEffect(() => {
     if (isSuccessUpdate && dataUpdate?.status === "OK") {
       handleCancelDelete();
-      Message.success("Đơn hàng đã hoàn thành");
+      Message.success("Đơn hàng đã được thành");
     } else if (isErrorUpdate) {
       Message.error();
     }
@@ -393,11 +402,11 @@ const RetailerOrder = () => {
         onCancel={handleCancelDelete}
         onOk={() => handleSubmitOrder(rowSelected)}
       >
-        <div>{`Hoàn thành giao hàng!`}</div>
+        <div>{`Đơn hàng đã giao thành công!`}</div>
       </ModalComponent>
       <ModalComponent
         forceRenders
-        title="Xóa người dùng"
+        title="Xóa đơn hàng"
         open={isModalOpenDelete}
         onCancel={handleCancelDelete}
         onOk={() => handleCancelOrder(rowSelected)}

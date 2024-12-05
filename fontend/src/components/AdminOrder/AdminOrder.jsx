@@ -14,6 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import DrawerComponent from "../DrawerComponent/DrawerComponent";
 import { useSelector } from "react-redux";
 import ModalComponent from "../ModalComponent/ModalComponent";
+import ColumnSearch from "../ColumnSearch/ColumnSearch"
 import * as Message from "../../components/Message/Message";
 import { WrapperHeader } from "./style";
 import { WrapperUploadFile } from "./style";
@@ -218,27 +219,34 @@ const AdminUser = () => {
     {
       title: "Mã Order",
       dataIndex: "_id",
-      sorter: (a, b) => a._id.length - b._id.length,
-      ...getColumnSearchProps("_id"),
+      sorter: (a, b) => a._id.localeCompare(b._id),
+      ...ColumnSearch({ dataIndex: "_id" })
     },
     {
       title: "Người mua hàng",
       dataIndex: "fullName",
-      sorter: (a, b) => a.fullName.length - b.fullName.length,
-      ...getColumnSearchProps("fullName"),
+      ...ColumnSearch({ dataIndex: "fullName" })
+
+    },
+    {
+      title: "Trạng thái",
+      dataIndex: "isDelivered",
+      ...ColumnSearch({ dataIndex: "isDelivered" }),
+      render: (isDelivered) => (isDelivered ? "Đã giao hàng" : "Chưa giao hàng"),
     },
     {
       title: "Cửa hàng",
       dataIndex: "retailerName",
-      ...getColumnSearchProps("retailerName"),
+      ...ColumnSearch({ dataIndex: "retailerName" }),
     },
     {
       title: "Tổng tiền",
       dataIndex: "totalPrice",
-      sorter: (a, b) => a.totalPrice.length - b.totalPrice.length,
+      sorter: (a, b) => a.totalPrice - b.totalPrice,
+      render: (value) => `${value.toLocaleString()} đ`,
     },
     {
-      title: "Action",
+      title: "Tác vụ",
       dataIndex: "action",
       render: (_, record) => renderAction(record),
     },

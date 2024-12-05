@@ -73,6 +73,10 @@ const ProfilePage = () => {
       address,
       avatar,
       access_token: user?.access_token,
+    }, {
+      onSuccess: () => {
+        Message.success("Cập nhật thành công")
+      }
     });
   };
 

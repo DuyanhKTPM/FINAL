@@ -229,7 +229,7 @@ const RetailerStore = () => {
     },
 
     {
-      title: "Action",
+      title: "Tác vụ",
       dataIndex: "action",
       render: renderAction,
     },

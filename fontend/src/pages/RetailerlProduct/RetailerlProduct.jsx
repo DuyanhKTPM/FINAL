@@ -298,7 +298,7 @@ const RetailerProduct = () => {
       dataIndex: "type",
     },
     {
-      title: "Action",
+      title: "Tác vụ",
       dataIndex: "action",
       render: renderAction,
     },

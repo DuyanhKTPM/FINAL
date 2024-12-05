@@ -49,11 +49,9 @@ const HomePage = () => {
 
   const topSellerProducts = useMemo(() => {
     if (!products?.data || products?.data.length === 0) return [];
-
     const sortedProducts = [...products.data].sort(
       (a, b) => b.selled - a.selled
     );
-
     return sortedProducts.slice(0, 6); // Đổi số 3 nếu bạn muốn lấy top n sản phẩm
   }, [products]);
 
@@ -71,6 +69,8 @@ const HomePage = () => {
       <div className="body" style={{ width: "100%", backgroundColor: "#e7dee2" }}>
         <div id="container" style={{ height: "100%", width: "100%" }}>
           <SliderComponent arrImages={[Baner1, Baner2, Baner3]} />
+          <p style={{ paddingLeft: "100px", fontSize: "25px" }}>TẤT CẢ SẢN PHẨM</p>
+
           <div style={{ margin: "0 auto", textAlign: "center" }}>
             <WrapperProducts>
               {products?.data
@@ -144,6 +144,7 @@ const HomePage = () => {
           paddingTop: "10px",
           backgroundColor: "#e7dee2",
           borderTop: "2px solid #fff",
+          paddingBottom: "100px"
         }}
       >
         <p style={{ paddingLeft: "100px", fontSize: "25px" }}>SẢN PHẨM BÁN CHẠY</p>
@@ -164,7 +165,6 @@ const HomePage = () => {
                   selled={product.selled}
                   discount={product.discount}
                   id={product._id}
-                  retailerName={product.retailerName}
                 />
               ))
             ) : (

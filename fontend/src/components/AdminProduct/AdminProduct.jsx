@@ -17,6 +17,7 @@ import DrawerComponent from "../DrawerComponent/DrawerComponent";
 import { useSelector } from "react-redux";
 import ModalComponent from "../ModalComponent/ModalComponent";
 import * as Message from "../../components/Message/Message";
+import ColumnSearch from "../ColumnSearch/ColumnSearch"
 
 const AdminProduct = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -237,8 +238,7 @@ const AdminProduct = () => {
     {
       title: "Tên sản phẩm",
       dataIndex: "name",
-      sorter: (a, b) => a.name.length - b.name.length,
-      ...getColumnSearchProps("name"),
+      ...ColumnSearch({ dataIndex: "name" }),
     },
     {
       title: "Giá sản phẩm",
@@ -246,19 +246,19 @@ const AdminProduct = () => {
       sorter: (a, b) => a.price - b.price,
       filters: [
         {
-          text: ">=50",
+          text: ">=250.000đ",
           value: ">=",
         },
         {
-          text: "<50",
+          text: "<250.000đ",
           value: "<",
         },
       ],
       onFilter: (value, record) => {
         if (value === ">=") {
-          return record.price >= 50;
+          return record.price >= 250000;
         } else if (value === "<") {
-          return record.price < 50;
+          return record.price < 25000;
         }
       },
     },
@@ -289,7 +289,7 @@ const AdminProduct = () => {
       dataIndex: "type",
     },
     {
-      title: "Action",
+      title: "Tác vụ",
       dataIndex: "action",
       render: renderAction,
     },

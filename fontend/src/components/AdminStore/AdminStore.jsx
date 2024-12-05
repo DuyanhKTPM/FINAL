@@ -223,7 +223,7 @@ const AdminStore = () => {
     },
 
     {
-      title: "Action",
+      title: "Tác vụ",
       dataIndex: "action",
       render: renderAction,
     },
