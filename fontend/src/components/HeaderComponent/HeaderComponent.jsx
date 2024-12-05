@@ -39,21 +39,18 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
     isHiddenCart = true;
   }
 
-
-  const handleNavigateLogin = () => navigate('/sign-in');
-  const handleNavigateHome = () => navigate('/');
-  const handleNavigateMap = () => navigate('/map');
+  const handleNavigateLogin = () => navigate("/sign-in");
+  const handleNavigateHome = () => navigate("/");
+  const handleNavigateMap = () => navigate("/map");
 
   const handleLogout = async () => {
     await UserService.logoutUser(user?.access_token);
     dispatch(resetUser());
   };
 
-
   const onSearch = (e) => {
-    dispatch(searchProduct(e.target.value))
+    dispatch(searchProduct(e.target.value));
   };
-
 
   const content = (
     <div>
@@ -111,21 +108,35 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
   };
 
   return (
-
     <div>
-      <WrapperHeader style={{ justifyContent: isHiddenSearch && isHiddenCart ? 'space-between' : 'unset' }}>
-        <Col span={5} style={{ display: 'flex', alignItems: 'center' }}>
-          <div onClick={handleNavigateHome} style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+      <WrapperHeader
+        style={{
+          justifyContent:
+            isHiddenSearch && isHiddenCart ? "space-between" : "unset",
+        }}
+      >
+        <Col span={5} style={{ display: "flex", alignItems: "center" }}>
+          <div
+            onClick={handleNavigateHome}
+            style={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+          >
             <div style={styles.logoCircle}>
               <span style={styles.logoSymbol}>N</span>
             </div>
-            <WrapperTextHeader style={{ fontSize: '20px', textAlign: 'center', color: '#fff', marginLeft: '10px' }}>
+            <WrapperTextHeader
+              style={{
+                fontSize: "20px",
+                textAlign: "center",
+                color: "#fff",
+                marginLeft: "10px",
+              }}
+            >
               Nông Nghiệp Xanh
             </WrapperTextHeader>
           </div>
         </Col>
         {!isHiddenSearch && (
-          <Col span={12}>
+          <Col span={10}>
             <ButtonSearch
               placeholder="Nhập Tên Sản Phẩm"
               textButton="Tìm Kiếm"
@@ -134,38 +145,84 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
             />
           </Col>
         )}
-        <Col span={5} style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+        <Col
+          span={5}
+          style={{ display: "flex", gap: "20px", alignItems: "center" }}
+        >
           <WrapperHeaderMap>
             <div onClick={handleNavigateMap}>
-              <FaMapLocationDot style={{ fontSize: "28px", marginRight: '20px' }} />
+              <FaMapLocationDot
+                style={{ fontSize: "28px", marginRight: "20px" }}
+              />
             </div>
           </WrapperHeaderMap>
           <WrapperHeaderAccount>
             {userAvatar ? (
               <img src={userAvatar} alt="avatar" style={styles.avatar} />
             ) : (
-              <UserOutlined style={{ fontSize: '30px' }} />
+              <UserOutlined style={{ fontSize: "30px" }} />
             )}
             {user?.name ? (
               <Popover content={content} trigger="click">
-                <div style={{ color: 'black' }} onClick={() => setIsOpenPopup((prev) => !prev)}>
+                <div
+                  style={{ color: "black" }}
+                  onClick={() => setIsOpenPopup((prev) => !prev)}
+                >
                   {userName}
                 </div>
               </Popover>
             ) : (
               <div onClick={handleNavigateLogin} style={{ cursor: "pointer" }}>
-                <WrapperTextHeaderSmall style={{ fontSize: '15px' }}>Đăng Nhập/Đăng Ký</WrapperTextHeaderSmall>
+                <WrapperTextHeaderSmall style={{ fontSize: "15px" }}>
+                  Đăng Nhập/Đăng Ký
+                </WrapperTextHeaderSmall>
               </div>
             )}
           </WrapperHeaderAccount>
           {!isHiddenCart && (
-            <div onClick={() => navigate('/order')} style={{ cursor: 'pointer', display: "flex", alignItems: "center", gap: "8px" }}>
+            <div
+              onClick={() => navigate("/order")}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
               <Badge count={order?.orderItems?.length} size="small">
-                <ShoppingCartOutlined style={{ fontSize: '30px', color: '#fff' }} />
+                <ShoppingCartOutlined
+                  style={{ fontSize: "30px", color: "#fff" }}
+                />
               </Badge>
-              <WrapperTextHeaderSmall style={{ fontSize: '15px', color: '#fff' }}>Giỏ Hàng</WrapperTextHeaderSmall>
+              <WrapperTextHeaderSmall
+                style={{ fontSize: "18px", color: "#fff" }}
+              >
+                Giỏ Hàng
+              </WrapperTextHeaderSmall>
             </div>
           )}
+          <div style={{ cursor: "pointer" }}>
+            <a
+              href="https://docs.google.com/forms/d/e/1FAIpQLSelDsjt-uxKZAM7aLOG51o98M6RJUOgVpxgw1tOwek6A_rzNg/viewform?embedded=true"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: "none" }}
+            >
+              <WrapperTextHeaderSmall style={{ fontSize: "18px" }}>
+                Góp Ý
+              </WrapperTextHeaderSmall>
+            </a>
+          </div>
+          <div
+            style={{
+              fontSize: "18px",
+              color: "#fff",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Tư Vấn
+            <b style={{ display: "block" }}>0764857605</b>
+          </div>
         </Col>
       </WrapperHeader>
     </div>

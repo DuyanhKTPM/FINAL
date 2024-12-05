@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import TypeProduct from "../../components/TypeProduct/TypeProduct";
 import {
   WrapperButtonMore,
@@ -46,6 +46,17 @@ const HomePage = () => {
     fetchAllTypeProduct();
   }, []);
 
+  const topSellerProducts = useMemo(() => {
+    if (!products?.data || products?.data.length === 0) return [];
+
+    // Sắp xếp sản phẩm theo số lượng bán giảm dần
+    const sortedProducts = [...products.data].sort(
+      (a, b) => b.selled - a.selled
+    );
+
+    // Lấy ra top 3 sản phẩm bán chạy nhất
+    return sortedProducts.slice(0, 6); // Đổi số 3 nếu bạn muốn lấy top n sản phẩm
+  }, [products]);
   return (
     <>
       <div style={{ padding: "0 120px" }}>
@@ -53,7 +64,7 @@ const HomePage = () => {
           {typeProducts.length > 0 ? (
             typeProducts.map((item) => <TypeProduct name={item} key={item} />)
           ) : (
-            <p>No product types found</p>
+            <p>Không tìm thấy sản phẩm</p>
           )}
         </WrapperTypeProduct>
       </div>
@@ -112,7 +123,7 @@ const HomePage = () => {
               display: "flex",
               justifyContent: "center",
               margin: "0 auto",
-              paddingTop: "40px",
+              paddingTop: "20px",
             }}
           >
             <WrapperButtonMore
@@ -139,6 +150,61 @@ const HomePage = () => {
               }
             />
           </div>
+        </div>
+      </div>
+      <div
+        style={{
+          fontSize: "30px",
+          paddingTop: "10px",
+          backgroundColor: "#e7dee2",
+          borderTop: "2px solid #fff",
+        }}
+      >
+        <p style={{ paddingLeft: "100px", fontSize: "25px" }}>
+          SẢN PHẨM BÁN CHẠY
+        </p>
+        <div style={{ margin: "0 auto", textAlign: "center" }}>
+          <WrapperProducts
+            style={{
+              margin: "0 auto",
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: "20px",
+              width: "90%",
+              paddingBottom: "30px",
+            }}
+          >
+            {topSellerProducts.length > 0 ? (
+              topSellerProducts.map((product) => (
+                <CardComponent
+                  style={{ width: "20%", height: "200px" }}
+                  key={product._id}
+                  countInStock={product.countInStock}
+                  description={product.description}
+                  image={product.image}
+                  name={product.name}
+                  price={product.price}
+                  rating={product.rating}
+                  type={product.type}
+                  selled={product.selled}
+                  discount={product.discount}
+                  id={product._id}
+                  retailerName={product.retailerName}
+                />
+              ))
+            ) : (
+              <h2
+                style={{
+                  fontSize: "30px",
+                  color: " green",
+                  display: "flex",
+                }}
+              >
+                Không Tìm Thấy Sản Phẩm
+              </h2>
+            )}
+          </WrapperProducts>
         </div>
       </div>
     </>

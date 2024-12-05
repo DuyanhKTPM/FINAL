@@ -215,7 +215,7 @@ const RetailerOrder = () => {
 
   const columns = [
     {
-      title: "Mã Order",
+      title: "Mã đơn hàng",
       dataIndex: "_id",
       sorter: (a, b) => a._id.length - b._id.length,
       ...getColumnSearchProps("_id"),

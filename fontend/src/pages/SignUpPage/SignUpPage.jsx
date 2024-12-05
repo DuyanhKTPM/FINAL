@@ -17,8 +17,8 @@ import { Input, Radio, Space, message } from "antd";
 const SignUpPage = () => {
   const navigate = useNavigate();
   const handleNavigateSignIn = () => {
-    navigate("/sign-in")
-  }
+    navigate("/sign-in");
+  };
   const handleSignUp = () => {
     mutation.mutate({
       name,
@@ -27,27 +27,25 @@ const SignUpPage = () => {
       password,
       confirmPassword,
       role,
-    })
-  }
-  const mutation = useMutationHooks((data) => UserService.createUser(data))
-  const { data, isSuccess, isError } = mutation
-  const [role, setRole] = useState("User")
-  const onChange = (e) => {
-    setRole(e.target.value)
+    });
   };
-  console.log('murrrrrrrrrr', mutation)
+  const mutation = useMutationHooks((data) => UserService.createUser(data));
+  const { data, isSuccess, isError } = mutation;
+  const [role, setRole] = useState("User");
+  const onChange = (e) => {
+    setRole(e.target.value);
+  };
+  console.log("murrrrrrrrrr", mutation);
   useEffect(() => {
     if (isError) {
-      Message.error(mutation?.error?.response?.data?.message)
-    }
-    else if (isError) {
-      Message.error(message.message)
-    }
-    else if (isSuccess) {
+      Message.error(mutation?.error?.response?.data?.message);
+    } else if (isError) {
+      Message.error(message.message);
+    } else if (isSuccess) {
       navigate("/sign-in");
-      Message.success('Đăng ký thành công');
+      Message.success("Đăng ký thành công");
     }
-  }, [isSuccess, isError, mutation?.error?.response?.data?.message])
+  }, [isSuccess, isError, mutation?.error?.response?.data?.message]);
 
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
@@ -161,7 +159,7 @@ const SignUpPage = () => {
             />
           </div>
           <Radio.Group onChange={onChange} value={role}>
-            <Space direction="vertical">
+            <Space direction="vertical" style={{ paddingTop: "8px" }}>
               <Radio value={"User"}>Khách Hàng</Radio>
               <Radio value={"Retailer"}>Chủ Cửa Hàng</Radio>
             </Space>
@@ -187,7 +185,7 @@ const SignUpPage = () => {
             styleTextButton={{ color: "#blue" }}
             textButton={"Đăng Ký"}
           ></ButtonComponent>
-          <p style={{ fontSize: "15px", marginTop: '5px' }}>
+          <p style={{ fontSize: "20px", marginTop: "5px" }}>
             {" "}
             Bạn đã có tài khoản{" "}
             <WrapperTextLight onClick={handleNavigateSignIn}>

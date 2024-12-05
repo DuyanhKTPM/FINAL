@@ -23,5 +23,15 @@ const startServer = async () => {
     });
 };
 
+// app.get('/api/comments', (req, res) => {
+//     res.json([
+//       { id: 1, text: "Sản phẩm rất tốt!", rating: 5 },
+//       { id: 2, text: "Chất lượng ổn nhưng giao hàng hơi chậm.", rating: 3 },
+//     ]);
+//   });
+  
+//   app.listen(5000, () => {
+//     console.log('Server is running on http://localhost:5000');
+//   });
 // Khởi động server
 startServer();

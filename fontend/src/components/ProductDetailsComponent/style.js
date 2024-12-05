@@ -10,9 +10,9 @@ work-break: break-word;
 
 `
 export const WrapperStyleText = styled.span`
-font-size: 15px;
+font-size: 20px;
 line-height: 24px;
-color: rgb(120 , 120, 120);
+color: #000;
 `
 export const WrapperPriceProduct = styled.div`
 background: rgb(250,250,250);

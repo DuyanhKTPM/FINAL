@@ -8,7 +8,8 @@ gap: 24px;
 justify-content: flex-start;
 height: 44px;
 font-size:20px;
-color: rgb(0, 255, 31);
+color: rgb(54, 170, 0);
+
 `
 export const WrapperButtonMore = styled(ButtonComponent)`
     &:hover {
@@ -20,12 +21,13 @@ export const WrapperButtonMore = styled(ButtonComponent)`
     }
     width: 100%;
     text-align: center;
-    cursor: ${(props) => props.disabled ? 'not-allowed' : 'pointers'}
+     cursor: ${(props) => props.disabled ? 'not-allowed' : 'pointers'}
 `
 export const WrapperProducts = styled.div`
   display: flex;
   gap: 14px;
   margin-top: 20px;
+ 
   flex-wrap: wrap;
   @media (max-width: 768px) { /* Mobile */
     flex-wrap: wrap;

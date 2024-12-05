@@ -1,7 +1,8 @@
 import { Col, Row, Image } from "antd";
-import { Rate } from "antd";
+import { Rate, Form } from "antd";
 
-import React, { useState } from "react";
+import InputComponents from "../../components/InputComponents/InputComponents";
+import React, { useState, useEffect } from "react";
 // import imageProductSmall from '../../assets/images/2.webp'
 import {
   WrapperInputNumber,
@@ -13,7 +14,7 @@ import {
 } from "./style";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
 import * as ProductService from "../../service/ProductService";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
@@ -27,6 +28,12 @@ const ProductDetailsComponent = ({ idProduct }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const user = useSelector((state) => state.user);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [rating, setRating] = useState(0);
+  const [form] = Form.useForm();
+
+  const queryClient = useQueryClient();
   const onChange = (value) => {
     setNumProduct(Number(value));
   };
@@ -37,6 +44,30 @@ const ProductDetailsComponent = ({ idProduct }) => {
     const res = await ProductService.getDetailsProduct(idProduct);
     return res.data;
     // }
+  };
+
+  // Hàm giả lập fetch bình luận từ server (nếu có backend, thay bằng API call)
+  useEffect(() => {
+    // Giả lập bình luận từ server
+    setComments([
+      // { id: 1, text: "Sản phẩm rất tốt!", rating: 5 },
+      // { id: 2, text: "Chất lượng ổn nhưng giao hàng hơi chậm.", rating: 3 },
+    ]);
+  }, []);
+  const handleAddComment = () => {
+    if (!newComment.trim() || rating === 0) {
+      Message.warning("Vui lòng nhập bình luận và chọn số sao!");
+      return;
+    }
+    const newCommentData = {
+      id: Date.now(),
+      text: newComment,
+      rating,
+    };
+    setComments([...comments, newCommentData]);
+    setNewComment("");
+    setRating(0);
+    Message.success("Đã thêm bình luận thành công!");
   };
 
   const handleChangeCount = (type) => {
@@ -126,7 +157,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
             />
             <WrapperStyleText>
               {" "}
-              || {productDetails?.countInStock}
+              || Số lượng tồn kho {productDetails?.countInStock}
             </WrapperStyleText>
           </div>
           <WrapperPriceProduct>
@@ -257,11 +288,10 @@ const ProductDetailsComponent = ({ idProduct }) => {
         >
           <span
             style={{
+              display: "flex",
               color: "green",
               paddingTop: "10px",
               justifyContent: "center",
-              display: "flex",
-              alignItems: "center",
             }}
           >
             {productDetails?.name}
@@ -378,6 +408,96 @@ const ProductDetailsComponent = ({ idProduct }) => {
               {productDetails?.preserve}
             </span>
           </div>
+        </div>
+      </Row>
+      <Row
+        style={{
+          width: "100%",
+          borderTop: "2px solid #ccc",
+          marginTop: "20px",
+          paddingTop: "20px",
+          background: "#ffff",
+          padding: "15px",
+        }}
+      >
+        <div style={{ width: "100%" }}>
+          <h3 style={{ color: "#556B2F" }}>Bình luận và đánh giá sản phẩm</h3>
+          <div style={{ marginBottom: "20px" }}>
+            <Form
+              name="basic"
+              labelCol={{ span: 2 }}
+              wrapperCol={{ span: 20 }}
+              // autoComplete="on"
+              size={large}
+              form={form}
+              style={{ height: "500px" }} // Điều chỉnh chiều cao Form
+            >
+              <Form.Item
+                // label="Tên Sản Phẩm"
+                name="name"
+                rules={[{ required: true, message: "Nhập tên sản phẩm!" }]}
+              >
+                <InputComponents
+                  // value={stateProduct.name}
+                  // onChange={handleOnChange}
+                  name="name"
+                />
+              </Form.Item>
+            </Form>
+            <div style={{ marginBottom: "10px" }}>
+              <label>Đánh giá: </label>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  style={{
+                    cursor: "pointer",
+                    color: star <= rating ? "gold" : "gray",
+                    fontSize: "20px",
+                  }}
+                  onClick={() => setRating(star)}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+            <ButtonComponent
+              textButton="Gửi bình luận"
+              onClick={handleAddComment}
+              styleButton={{
+                backgroundColor: "#007bff",
+                color: "#fff",
+                padding: "10px 20px",
+              }}
+              size={18}
+            />
+          </div>
+
+          <h4 style={{ color: "#556B2F", marginBottom: "10px" }}>
+            Đánh giá từ người dùng
+          </h4>
+          {comments.length > 0 ? (
+            comments.map((comment) => (
+              <div
+                key={comment.id}
+                style={{
+                  borderBottom: "1px solid #ccc",
+                  padding: "10px 0",
+                  marginBottom: "10px",
+                }}
+              >
+                <p style={{ margin: "0", fontSize: "16px" }}>
+                  {comment.text}{" "}
+                  <span style={{ color: "gold" }}>
+                    {Array.from({ length: comment.rating }, (_, i) => "★").join(
+                      ""
+                    )}
+                  </span>
+                </p>
+              </div>
+            ))
+          ) : (
+            <p>Chưa có bình luận nào.</p>
+          )}
         </div>
       </Row>
     </div>
