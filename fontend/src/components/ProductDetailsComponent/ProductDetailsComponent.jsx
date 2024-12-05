@@ -188,9 +188,11 @@ const ProductDetailsComponent = ({ idProduct }) => {
     }
   }, [comments]);
 
-
   const handleAddOrderProduct = () => {
-    if (!user?.id) {
+    if (user?.role === "Admin" || user?.role === "Retailer") {
+      Message.warning("Không thể thêm giỏ hàng khi ở quyền quản lý!");
+    }
+    else if (!user?.id) {
       navigate("/sign-in", { state: location?.pathname });
     } else {
       dispatch(

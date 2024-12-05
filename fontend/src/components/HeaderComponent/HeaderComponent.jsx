@@ -34,6 +34,9 @@ const HeaderComponent = ({ isHiddenSearch = false, isHiddenCart = false }) => {
   if (user?.role === "User") {
     isHiddenSearch = false;
     isHiddenCart = false;
+  } else if (user?.role === "Retailer") {
+    isHiddenSearch = false;
+    isHiddenCart = true;
   } else {
     isHiddenSearch = true;
     isHiddenCart = true;

@@ -112,7 +112,6 @@ const PaymentPage = () => {
       })
     }
   }
-
   const handleAddOrder = () => {
     if (payment && delivery) {
       setLoading(true);
@@ -280,7 +279,10 @@ const PaymentPage = () => {
     <Spin spinning={loading} tip="Đang xử lý...">
       <div className="container" style={{ background: '#f5f5fa', width: '100%', height: '100vh' }}>
         <div style={{ height: '100%', width: '80%', margin: '0 auto' }}>
-          <h2>Phương thức thanh toán</h2>
+          <p style={{ fontSize: '18px', fontWeight: "bold", marginTop: "0", padding: "10px" }}
+          >
+            <span style={{ cursor: 'pointer' }} onClick={() => { navigate('/') }}>Trang chủ</span> - <u>Thanh toán đơn hàng</u>
+          </p>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <WrapperLeft>
               <label style={{ fontSize: '16px', fontWeight: 'bold' }}>Chọn phương thức giao hàng</label>

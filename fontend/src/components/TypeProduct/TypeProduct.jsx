@@ -1,8 +1,10 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
-
+import { useNavigate, useLocation } from "react-router-dom";
+import "./style.css";
 const TypeProduct = ({ name }) => {
   const navigate = useNavigate();
+  const location = useLocation(); // Lấy đường dẫn hiện tại
+
   const handleNavigateType = (type) => {
     navigate(
       `/product/${type
@@ -12,17 +14,17 @@ const TypeProduct = ({ name }) => {
       { state: type }
     );
   };
+
+  const isActive = location.state === name;
+
   return (
     <div
-      style={{
-        padding: "0 10px",
-        cursor: "pointer",
-        color: "rgb(54, 170, 0) ",
-      }}
+      className={`type-product ${isActive ? "active" : ""}`}
       onClick={() => handleNavigateType(name)}
     >
       {name}
     </div>
+
   );
 };
 

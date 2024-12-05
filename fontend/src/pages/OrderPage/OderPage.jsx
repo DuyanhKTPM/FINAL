@@ -199,7 +199,10 @@ const OrderPage = () => {
   return (
     <div style={{ background: "#f5f5fa", width: "100%", height: "100vh" }}>
       <div style={{ height: "100%", width: "100%", margin: "0 auto" }}>
-        <h2>Giỏ hàng</h2>
+        <p style={{ fontSize: '18px', fontWeight: "bold", marginTop: "0", padding: "10px" }}
+        >
+          <span style={{ cursor: 'pointer' }} onClick={() => { navigate('/') }}>Trang chủ</span> - <u>Giỏ hàng</u>
+        </p>
         <div style={{ display: "flex", justifyContent: "center" }}>
           <WrapperLeft>
             <WrapperStyleHeader>

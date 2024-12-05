@@ -14,6 +14,8 @@ const TypeProductPage = () => {
   const searchDebounce = useDebounce(searchProduct, 800);
   const [typeProducts, setTypeProducts] = useState([]);
   const { state } = useLocation();
+  const [selectedType, setSelectedType] = useState(state || null);
+
   const [products, setProducts] = useState([]);
   const [panigate, setPanigate] = useState({
     page: 0,
@@ -52,11 +54,22 @@ const TypeProductPage = () => {
       <div style={{ padding: "0 120px" }}>
         <WrapperTypeProduct>
           {typeProducts.length > 0 ? (
-            typeProducts.map((item) => <TypeProduct name={item} key={item} />)
+            typeProducts.map((item) => (
+              <TypeProduct
+                name={item}
+                key={item}
+                isActive={selectedType === item} // Kiểm tra xem có phải type đang chọn không
+                onClick={() => {
+                  setSelectedType(item);
+                  fetchProductType(item, panigate.page, panigate.limit); // Gọi dữ liệu theo type
+                }}
+              />
+            ))
           ) : (
             <p>No product types found</p>
           )}
         </WrapperTypeProduct>
+
       </div>
       <div
         style={{
