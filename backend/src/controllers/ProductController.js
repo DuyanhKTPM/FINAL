@@ -85,7 +85,7 @@ const createProduct = async (req, res) => {
         // }
 
         const response = await ProductService.createProduct(req.body)
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -105,7 +105,7 @@ const updateProduct = async (req, res) => {
             })
         }
         const response = await ProductService.updateProduct(ProductId, data)
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -125,7 +125,7 @@ const getDetailsProduct = async (req, res) => {
         }
 
         const response = await ProductService.getDetailsProduct(productId);
-        return res.status(200).json(response); // Trả về mã 200 thay vì 201
+        return res.status(200).json(response);
     } catch (e) {
         console.error(e);
         return res.status(500).json({
@@ -147,7 +147,7 @@ const deleteProduct = async (req, res) => {
         }
 
         const response = await ProductService.deleteProduct(productId)
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -167,7 +167,7 @@ const deleteManyProduct = async (req, res) => {
         }
 
         const response = await ProductService.deleteManyProduct(ids)
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -185,7 +185,7 @@ const getAllProduct = async (req, res) => {
             sort,
             filter
         )
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -195,7 +195,7 @@ const getAllProduct = async (req, res) => {
 const getAllProductRetailer = async (req, res) => {
     try {
         const { limit, page, sort, filter, userId } = req.query
-        
+
         const response = await ProductService.getAllProductRetailer(
             Number(limit) || 8,
             Number(page) || 0,
@@ -203,7 +203,7 @@ const getAllProductRetailer = async (req, res) => {
             filter,
             userId
         )
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -213,7 +213,7 @@ const getAllProductRetailer = async (req, res) => {
 const getAllType = async (req, res) => {
     try {
         const response = await ProductService.getAllType()
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e

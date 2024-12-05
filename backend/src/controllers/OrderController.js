@@ -60,7 +60,7 @@ const updateOrder = async (req, res) => {
         }
         const response = await OrderService.updateOrder(orderId, data)
 
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -81,7 +81,7 @@ const getOrderRetailer = async (req, res) => {
         }
 
         const response = await OrderService.getOrderRetailer(retailerId);
-        return res.status(200).json(response); // Trả về mã 200 thay vì 201
+        return res.status(200).json(response);
     } catch (e) {
         console.error(e);
         return res.status(500).json({
@@ -149,7 +149,7 @@ const cancelOrderDetails = async (req, res) => {
         const response = await OrderService.cancelOrderDetails(orderId, data)
         return res.status(200).json(response)
     } catch (e) {
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -159,7 +159,7 @@ const getAllOrder = async (req, res) => {
         const data = await OrderService.getAllOrder()
         return res.status(200).json(data)
     } catch (e) {
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }

@@ -30,7 +30,7 @@ const createComment = async (req, res) => {
         }
         const response = await CommentService.createComment(req.body)
 
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -67,7 +67,7 @@ const deleteComment = async (req, res) => {
             })
         }
         const response = await CommentService.deleteComment(commentId)
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e

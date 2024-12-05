@@ -29,7 +29,7 @@ const createStore = async (req, res) => {
             })
         }
         const response = await StoreService.createStore(req.body)
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -50,7 +50,7 @@ const updateStore = async (req, res) => {
         }
 
         const response = await StoreService.updateStore(StoreId, data)
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -70,7 +70,7 @@ const deleteStore = async (req, res) => {
         }
 
         const response = await StoreService.deleteStore(storeId)
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -89,7 +89,7 @@ const deleteManyStore = async (req, res) => {
         }
 
         const response = await StoreService.deleteManyStore(ids)
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -108,7 +108,7 @@ const getAllStore = async (req, res) => {
             sort,
             filter
         )
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -125,7 +125,7 @@ const getAllStoreRetailer = async (req, res) => {
             filter,
             userId
         )
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e

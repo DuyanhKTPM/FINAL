@@ -8,7 +8,7 @@ const createUser = async (req, res) => {
     try {
         const { name, email, phone, password, confirmPassword, role } = req.body
         const regemail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        const regname = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]+$/
+        const regname = /^(?=.*[a-z])(?=.*[A-Z])[a-zA-Z]+$/
 
         const isCheckEmail = regemail.test(email)
         const isCheckName = regname.test(name)
@@ -20,14 +20,14 @@ const createUser = async (req, res) => {
                 message: 'The input is required'
             })
         } else if (!isCheckEmail) {
-            return res.status(400).json({
+            return res.status(422).json({
                 status: 'ERR',
                 message: 'Nhập đúng định dạng gmail'
             })
         } else if (!isCheckName) {
-            return res.status(400).json({
+            return res.status(422).json({
                 status: 'ERR',
-                message: 'Tài khoản phải chứa chữ hoa, số'
+                message: 'Tài khoản phải chứa chữ hoa'
             })
         } else if (password !== confirmPassword) {
             return res.status(400).json({
@@ -40,11 +40,18 @@ const createUser = async (req, res) => {
                 message: 'Tài khoản đã tồn tại'
             })
         }
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(409).json({
+                status: 'ERR',
+                message: 'Email đã tồn tại'
+            });
+        }
         const response = await UserService.createUser(req.body)
         return res.status(200).json(response)
     } catch (e) {
         console.log(e)
-        return res.status(400).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -58,7 +65,7 @@ const loginUser = async (req, res) => {
         const reg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]+$/
         // const isCheckName = reg.test(name)
         if (!name || !password) {
-            return res.status(200).json({
+            return res.status(400).json({
                 status: 'ERR',
                 message: 'Nhập đầy đủ Mật Khẩu & Tài Khoản'
             })
@@ -77,7 +84,7 @@ const loginUser = async (req, res) => {
             Secure: false,
             samsite: 'strict',
         })
-        return res.status(201).json(newResponse)
+        return res.status(200).json(newResponse)
     } catch (e) {
         return res.status(500).json({
             status: 'ERR',
@@ -98,7 +105,7 @@ const updateUser = async (req, res) => {
         }
 
         const response = await UserService.updateUser(userId, data)
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -110,14 +117,14 @@ const deleteUser = async (req, res) => {
     try {
         const userId = req.params.id
         if (!userId) {
-            return res.status(200).json({
+            return res.status(400).json({
                 status: 'ERR',
                 message: 'The userID is required'
             })
         }
 
         const response = await UserService.deleteUser(userId)
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -129,14 +136,14 @@ const deleteManyUser = async (req, res) => {
     try {
         const ids = req.body.ids
         if (!ids) {
-            return res.status(200).json({
+            return res.status(400).json({
                 status: 'ERR',
                 message: 'The ids is required'
             })
         }
 
         const response = await UserService.deleteManyUser(ids)
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -148,7 +155,7 @@ const deleteManyUser = async (req, res) => {
 const getAllUser = async (req, res) => {
     try {
         const response = await UserService.getAllUser()
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -161,14 +168,14 @@ const getDetailsUser = async (req, res) => {
     try {
         const userId = req.params.id
         if (!userId) {
-            return res.status(200).json({
+            return res.status(400).json({
                 status: 'ERR',
                 message: 'The userID is required'
             })
         }
 
         const response = await UserService.getDetailsUser(userId)
-        return res.status(201).json(response)
+        return res.status(200).json(response)
     } catch (e) {
         return res.status(500).json({
             message: e
@@ -181,7 +188,7 @@ const refreshToken = async (req, res) => {
     try {
         const token = req.cookies.refresh_token
         if (!token) {
-            return res.status(200).json({
+            return res.status(400).json({
                 status: 'ERR',
                 message: 'The token is required'
             })
@@ -189,7 +196,7 @@ const refreshToken = async (req, res) => {
         const response = await JwtService.refreshTokenJwtService(token)
         return res.status(200).json(response)
     } catch (e) {
-        return res.status(404).json({
+        return res.status(500).json({
             message: e
         })
     }
@@ -211,7 +218,7 @@ const logoutUser = (req, res) => {
         });
     } catch (e) {
         // Trả về lỗi nếu có vấn đề
-        return res.status(404).json({
+        return res.status(500).json({
             message: e.message
         });
     }
